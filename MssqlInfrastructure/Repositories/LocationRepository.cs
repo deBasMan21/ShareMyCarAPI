@@ -50,12 +50,10 @@ namespace MssqlInfrastructure.Repositories
         {
             Location old = _context.Locations.FirstOrDefault(l => l.Id == location.Id);
             if (old != null) { return null; }
-            //old.City = location.City;
-            //old.Name = location.Name;
-            //old.Address = location.Address;
-            //old.ZipCode = location.ZipCode;
-
-            old = location;
+            old.City = location.City;
+            old.Name = location.Name;
+            old.Address = location.Address;
+            old.ZipCode = location.ZipCode;
 
             await _context.SaveChangesAsync();
             return old;
