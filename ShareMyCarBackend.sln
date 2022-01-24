@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainServices", "DomainServices\DomainServices.csproj", "{20AE32CE-6E8F-45FD-B1F8-0C4C9B7F6856}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{1EDD6100-91DB-422B-8C07-61069916594E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MssqlInfrastructure", "MssqlInfrastructure\MssqlInfrastructure.csproj", "{3D0EFEE6-0332-4F2F-A87B-C4FFAAD6AD4E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{20AE32CE-6E8F-45FD-B1F8-0C4C9B7F6856}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20AE32CE-6E8F-45FD-B1F8-0C4C9B7F6856}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20AE32CE-6E8F-45FD-B1F8-0C4C9B7F6856}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1EDD6100-91DB-422B-8C07-61069916594E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1EDD6100-91DB-422B-8C07-61069916594E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1EDD6100-91DB-422B-8C07-61069916594E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1EDD6100-91DB-422B-8C07-61069916594E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D0EFEE6-0332-4F2F-A87B-C4FFAAD6AD4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D0EFEE6-0332-4F2F-A87B-C4FFAAD6AD4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D0EFEE6-0332-4F2F-A87B-C4FFAAD6AD4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D0EFEE6-0332-4F2F-A87B-C4FFAAD6AD4E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
