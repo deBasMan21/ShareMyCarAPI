@@ -47,21 +47,32 @@ namespace ShareMyCarBackend.Controllers
         {
             Location location = new Location() { Address = value.Address, City = value.City, Name = value.Name, ZipCode = value.ZipCode };
 
-            await _locationRepo.CreateLocation(location);
+            location = await _locationRepo.CreateLocation(location);
 
             return Ok(new SuccesResponse() { Result = location });
         }
 
         // PUT api/<LocationController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult<IResponse>> Put(int id, [FromBody] NewLocationModel value)
         {
+            Location location = new Location() { Id = id, Address = value.Address, City = value.City, Name = value.Name, ZipCode = value.ZipCode };
+            location = await _locationRepo.UpdateLocation(location);
+            if(location == null) { return BadRequest(new ErrorResponse() { ErrorCode = 400, Message = "Update failed" }); }
+            return Ok(new SuccesResponse() { Result = location});
         }
 
         // DELETE api/<LocationController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public ActionResult<IResponse> Delete(int id)
         {
+            Location location = _locationRepo.GetById(id);
+
+            if(location == null) { return NotFound(new ErrorResponse() { Message = "Location not found", ErrorCode = 404 }); }
+
+            location = _locationRepo.DeleteLocation(location);
+
+            return Ok(new SuccesResponse { Result = location });
         }
     }
 }
