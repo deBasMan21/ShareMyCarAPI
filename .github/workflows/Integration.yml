@@ -1,13 +1,6 @@
 name: CI
 
-on:
-  push:
-    branches:
-    - development
-  pull_request:
-    branches:
-    - development
-    - master
+on: pull_request
 
 jobs:
   # Build job for building the application
