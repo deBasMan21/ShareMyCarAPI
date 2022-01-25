@@ -9,9 +9,9 @@ namespace DomainServices
 {
     public interface ILocationRepository
     {
-        public Location GetById(int id);
-        public List<Location> GetAll();
-        public Location GetByName(string name);
+        public Location GetById(int id, int userId);
+        public List<Location> GetAll(int userId);
+        public Location GetByName(string name, int userId);
         public Task<Location> UpdateLocation(Location location);
         public Location DeleteLocation(Location location);
         public Task<Location> CreateLocation(Location location);
