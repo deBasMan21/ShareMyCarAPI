@@ -1,5 +1,6 @@
 ﻿using Domain;
 using DomainServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShareMyCarBackend.Models;
 using ShareMyCarBackend.Response;
@@ -10,13 +11,16 @@ namespace ShareMyCarBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class LocationController : ControllerBase
     {
         private readonly ILocationRepository _locationRepo;
+        private readonly IUserRepository _userRepository;
 
-        public LocationController(ILocationRepository locationRepository)
+        public LocationController(ILocationRepository locationRepository, IUserRepository userRepository)
         {
             _locationRepo = locationRepository;
+            _userRepository = userRepository;
         }
 
         // GET: api/<LocationController>
@@ -24,6 +28,8 @@ namespace ShareMyCarBackend.Controllers
         public ActionResult<IResponse> Get()
         {
             List<Location> locations = _locationRepo.GetAll();
+
+            User user = GetUser();
 
             if(locations.Count == 0) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Location not found" }); }
 
@@ -73,6 +79,12 @@ namespace ShareMyCarBackend.Controllers
             location = _locationRepo.DeleteLocation(location);
 
             return Ok(new SuccesResponse { Result = location });
+        }
+
+        private User GetUser()
+        {
+            int id = int.Parse(this.User.Claims.First(i => i.Type == "UserId").Value);
+            return _userRepository.GetById(id);
         }
     }
 }
