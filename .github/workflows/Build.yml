@@ -37,7 +37,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"David200337_BRESS-API" /o:"david200337" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=\"**/coverage.opencover.xml\"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"deBasMan21_ShareMyCarAPI" /o:"debasman21" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           echo Building solution
           dotnet build
           
