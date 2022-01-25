@@ -15,10 +15,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddMvc()
@@ -66,9 +62,15 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(config =>
     config.Password.RequireDigit = true;
     config.Password.RequireUppercase = false;
     config.Password.RequireNonAlphanumeric = false;
-}).AddEntityFrameworkStores<SecurityDbContext>()
+})
+    .AddEntityFrameworkStores<SecurityDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+});
 
 builder.Services.AddAuthentication().AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
 {
@@ -90,6 +92,8 @@ builder.Services.AddAuthentication().AddJwtBearer(JwtBearerDefaults.Authenticati
         return context.Response.WriteAsync(jsonString);
     };
 });
+
+builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -122,6 +126,7 @@ builder.Services.AddScoped<SMCDbContext>();
 builder.Services.AddScoped<SecurityDbContext>();
 
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddDbContext<SMCDbContext>(options => options.UseSqlServer(Environment.GetEnvironmentVariable("SMC_connection")));
 builder.Services.AddDbContext<SecurityDbContext>(options => options.UseSqlServer(Environment.GetEnvironmentVariable("SMC_connection_sec")));
@@ -135,6 +140,8 @@ app.UseSwaggerUI();
 app.UseCors(MyAllowSpecificOrigins);
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
