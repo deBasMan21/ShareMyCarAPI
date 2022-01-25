@@ -33,7 +33,7 @@ namespace ShareMyCarBackend.Controllers
 
             if(locations.Count == 0) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Location not found" }); }
 
-            return new SuccesResponse() { Result = locations };
+            return Ok(new SuccesResponse() { Result = locations });
         }
 
         // GET api/<LocationController>/5
@@ -53,7 +53,9 @@ namespace ShareMyCarBackend.Controllers
         [HttpPost]
         public async Task<ActionResult<IResponse>> Post([FromBody] NewLocationModel value)
         {
-            Location location = new Location() { Address = value.Address, City = value.City, Name = value.Name, ZipCode = value.ZipCode };
+            User user = GetUser();
+
+            Location location = new Location() { Address = value.Address, City = value.City, Name = value.Name, ZipCode = value.ZipCode, CreatorId = user.Id };
 
             location = await _locationRepo.CreateLocation(location);
 
@@ -68,7 +70,7 @@ namespace ShareMyCarBackend.Controllers
 
             Location loc = _locationRepo.GetById(id, user.Id);
 
-            if(loc == null) { return Unauthorized(new ErrorResponse() { ErrorCode = 404, Message = "This account is not authorized to update this location"}); }
+            if(loc == null) { return Unauthorized(new ErrorResponse() { ErrorCode = 401, Message = "This account is not authorized to update this location"}); }
 
             Location location = new Location() { Address = value.Address, City = value.City, Name = value.Name, ZipCode = value.ZipCode };
 
@@ -94,9 +96,9 @@ namespace ShareMyCarBackend.Controllers
             return Ok(new SuccesResponse { Result = location });
         }
 
-        private User GetUser()
+        protected virtual User GetUser()
         {
-            int id = int.Parse(this.User.Claims.First(i => i.Type == "UserId").Value);
+            int id = int.Parse(User.Claims.First(i => i.Type == "UserId").Value);
             return _userRepository.GetById(id);
         }
     }
