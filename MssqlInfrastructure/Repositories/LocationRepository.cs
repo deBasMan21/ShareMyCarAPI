@@ -31,19 +31,19 @@ namespace MssqlInfrastructure.Repositories
             return location;
         }
 
-        public List<Location> GetAll()
+        public List<Location> GetAll(int userId)
         {
-            return _context.Locations.ToList();
+            return _context.Locations.Where(l => l.CreatorId == userId).ToList();
         }
 
-        public Location GetById(int id)
+        public Location GetById(int id, int userId)
         {
-            return _context.Locations.FirstOrDefault(l => l.Id == id);
+            return _context.Locations.FirstOrDefault(l => l.Id == id && l.CreatorId == userId);
         }
 
-        public Location GetByName(string name)
+        public Location GetByName(string name, int userId)
         {
-            return _context.Locations.FirstOrDefault(l => l.Name == name);
+            return _context.Locations.FirstOrDefault(l => l.Name == name && l.CreatorId == userId);
         }
 
         public async Task<Location> UpdateLocation(Location location)
