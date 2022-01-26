@@ -85,6 +85,8 @@ namespace ShareMyCarBackend.Controllers
 
             if(car == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Car not found" });}
 
+            if(car.ShareCode == "undefined") { return BadRequest(new ErrorResponse() { ErrorCode = 400, Message = "Owner needs to share this car to generate a shareCode"}); }
+            
             if(car.ShareCode != model.ShareCode) { return BadRequest(new ErrorResponse() { ErrorCode = 400, Message = "Incorrect shareCode"}); }
 
             user = await _userRepository.AddCar(user, car);
