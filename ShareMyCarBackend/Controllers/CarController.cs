@@ -37,6 +37,18 @@ namespace ShareMyCarBackend.Controllers
             return Ok(new SuccesResponse() { Result = car });
         }
 
+        [HttpGet("{id}/rides")]
+        public ActionResult<IResponse> GetRides(int id)
+        {
+            User user = GetUser();
+
+            Car car = _carRepository.GetById(id, user);
+
+            if (car == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Car not found" }); }
+
+            return Ok(new SuccesResponse() { Result = car.Rides });
+        }
+
         // POST api/<CarController>
         [HttpPost]
         public async Task<ActionResult<IResponse>> Post([FromBody] NewCarModel model)
@@ -45,7 +57,7 @@ namespace ShareMyCarBackend.Controllers
             
             Car newCar = new Car() { Image = model.Image, Name = model.Name, Plate = model.Plate, OwnerId = user.Id, Users = new List<User>() { user }, ShareCode = "undefined" };
 
-            await _carRepository.Create(newCar, user);
+            newCar = await _carRepository.Create(newCar, user);
 
             return Ok(new SuccesResponse() { Result = newCar });
         }
@@ -77,6 +89,8 @@ namespace ShareMyCarBackend.Controllers
 
             Car car = _carRepository.GetById(id, user);
 
+            if (car == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Car not found" }); }
+
             if (car.OwnerId != user.Id) { return Unauthorized(new ErrorResponse() { ErrorCode = 401, Message = "Not authorized to delete this car" }); }
 
             _carRepository.Delete(car, user);
@@ -91,7 +105,9 @@ namespace ShareMyCarBackend.Controllers
 
             Car car = _carRepository.GetById(id, user);
 
-            if (car.OwnerId != user.Id) { return Unauthorized(new ErrorResponse() { ErrorCode = 401, Message = "Not authorized to delete this car" }); }
+            if(car == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Car not found"}); }
+
+            if (car.OwnerId != user.Id) { return Unauthorized(new ErrorResponse() { ErrorCode = 401, Message = "Not authorized to update this car" }); }
 
             string shareCode = RandomString(4);
             car.ShareCode = shareCode;
@@ -108,11 +124,13 @@ namespace ShareMyCarBackend.Controllers
 
             Car car = _carRepository.GetById(id, user);
 
-            if (car.OwnerId != user.Id) { return Unauthorized(new ErrorResponse() { ErrorCode = 401, Message = "Not authorized to delete this car" }); }
+            if(car == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Car not found"}); }
+
+            if (car.OwnerId != user.Id) { return Unauthorized(new ErrorResponse() { ErrorCode = 401, Message = "Not authorized to update this car" }); }
 
             car.ShareCode = "undefined";
 
-            await _carRepository.Update(car, user);
+            car = await _carRepository.Update(car, user);
 
             return Ok(new SuccesResponse() { Result = car });
         }
