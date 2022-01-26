@@ -37,6 +37,18 @@ namespace ShareMyCarBackend.Controllers
             return Ok(new SuccesResponse() { Result = car });
         }
 
+        [HttpGet("{id}/rides")]
+        public ActionResult<IResponse> GetRides(int id)
+        {
+            User user = GetUser();
+
+            Car car = _carRepository.GetById(id, user);
+
+            if (car == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Car not found" }); }
+
+            return Ok(new SuccesResponse() { Result = car.Rides });
+        }
+
         // POST api/<CarController>
         [HttpPost]
         public async Task<ActionResult<IResponse>> Post([FromBody] NewCarModel model)
