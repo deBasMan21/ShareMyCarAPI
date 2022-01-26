@@ -96,7 +96,7 @@ namespace ShareMyCarBackend.Controllers
             return Ok(new SuccesResponse { Result = location });
         }
 
-        protected virtual User GetUser()
+        private User GetUser()
         {
             int id = int.Parse(User.Claims.First(i => i.Type == "UserId").Value);
             return _userRepository.GetById(id);

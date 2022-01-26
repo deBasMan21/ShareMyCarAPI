@@ -23,13 +23,15 @@ namespace EndpointTests.UserTests
             // ARRANGE
             var userRepo = new Mock<IUserRepository>();
 
+            var carRepo = new Mock<ICarRepository>();
+
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim("UserId", "1") }, "TestAuthentication"));
 
             User user1 = new User() { Id = 1 };
 
             userRepo.Setup(u => u.GetById(It.IsAny<int>())).Returns(user1);
 
-            var sut = new UserController(userRepo.Object, null);
+            var sut = new UserController(userRepo.Object, carRepo.Object, null);
             sut.ControllerContext = new ControllerContext();
             sut.ControllerContext.HttpContext = new DefaultHttpContext { User = user };
 
@@ -49,13 +51,15 @@ namespace EndpointTests.UserTests
             // ARRANGE
             var userRepo = new Mock<IUserRepository>();
 
+            var carRepo = new Mock<ICarRepository>();
+
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim("UserId", "1") }, "TestAuthentication"));
 
             User user1 = new User() { Id = 1 };
 
             userRepo.Setup(u => u.GetById(It.IsAny<int>()));
 
-            var sut = new UserController(userRepo.Object, null);
+            var sut = new UserController(userRepo.Object, carRepo.Object, null);
             sut.ControllerContext = new ControllerContext();
             sut.ControllerContext.HttpContext = new DefaultHttpContext { User = user };
 

@@ -1,5 +1,6 @@
 ﻿using Domain;
 using DomainServices;
+using Microsoft.EntityFrameworkCore;
 using MssqlInfrastructure.Context;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,13 @@ namespace MssqlInfrastructure.Repositories
         public UserRepository(SMCDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<User> AddCar(User user, Car car)
+        {
+            user.Cars.Add(car);
+            await _context.SaveChangesAsync();
+            return user;
         }
 
         public async Task<User> Create(User user)
@@ -33,21 +41,28 @@ namespace MssqlInfrastructure.Repositories
 
         public List<User> GetAll()
         {
-            return _context.Users.ToList();
+            return _context.Users.Include(u => u.Cars).ToList();
         }
 
         public User GetByEmail(string email)
         {
-            return _context.Users.FirstOrDefault(u => u.Email == email);
+            return _context.Users.Include(u => u.Cars).FirstOrDefault(u => u.Email == email);
         }
 
         public User GetById(int id)
         {
-            return _context.Users.FirstOrDefault(u => u.Id == id);
+            return _context.Users.Include(u => u.Cars).FirstOrDefault(u => u.Id == id);
         }
         public User GetByName(string name)
         {
-            return _context.Users.FirstOrDefault(l => l.Name == name);
+            return _context.Users.Include(u => u.Cars).FirstOrDefault(l => l.Name == name);
+        }
+
+        public async Task<User> RemoveCar(User user, Car car)
+        {
+            user.Cars.Remove(car);
+            await _context.SaveChangesAsync();
+            return user;
         }
 
         public async Task<User> Update(User user)
