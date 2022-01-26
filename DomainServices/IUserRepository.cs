@@ -16,5 +16,7 @@ namespace DomainServices
         public Task<User> Create(User user);
         public Task<User> Update(User user);
         public User Delete(User user);
+        public Task<User> AddCar(User user, Car car);
+        public Task<User> RemoveCar(User user, Car car);
     }
 }

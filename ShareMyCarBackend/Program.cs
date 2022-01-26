@@ -127,6 +127,7 @@ builder.Services.AddScoped<SecurityDbContext>();
 
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICarRepository, CarRepository>();
 
 builder.Services.AddDbContext<SMCDbContext>(options => options.UseSqlServer(Environment.GetEnvironmentVariable("SMC_connection")));
 builder.Services.AddDbContext<SecurityDbContext>(options => options.UseSqlServer(Environment.GetEnvironmentVariable("SMC_connection_sec")));

@@ -18,29 +18,64 @@ namespace MssqlInfrastructure.Repositories
             _context = context;
         }
 
-        public Task<Car> Create(Car car)
+        public async Task<Car> AddRideToCar(Car car, Ride ride, User user)
         {
-            throw new NotImplementedException();
+            car.Rides.Add(ride);
+            await _context.SaveChangesAsync();
+            car.IsOwner = car.OwnerId == user.Id;
+            return car;
         }
 
-        public Car Delete(Car car)
+        public async Task<Car> Create(Car car, User user)
         {
-            throw new NotImplementedException();
+            _context.Cars.Add(car);
+            await _context.SaveChangesAsync();
+            car.IsOwner = car.OwnerId == user.Id;
+            return car;
         }
 
-        public List<Car> GetAll()
+        public Car Delete(Car car, User user)
         {
-            return _context.Cars.ToList();
+            _context.Cars.Remove(car);
+            _context.SaveChanges();
+            car.IsOwner = car.OwnerId == user.Id;
+            return car;
         }
 
-        public Car GetById(int id)
+        public List<Car> GetAll(User user)
         {
-            return _context.Cars.FirstOrDefault(c => c.Id == id);
+            List<Car> car = _context.Cars.ToList();
+            car.ForEach(car => car.IsOwner = car.OwnerId == user.Id);
+            return car;
         }
 
-        public Task<Car> Update(Car car)
+        public Car GetById(int id, User user)
         {
-            throw new NotImplementedException();
+            Car car = _context.Cars.FirstOrDefault(c => c.Id == id);
+            car.IsOwner = car.OwnerId == user.Id;
+            return car;
+        }
+
+        public async Task<Car> RemoveRideFromCar(Car car, Ride ride, User user)
+        {
+            car.Rides.Remove(ride);
+            await _context.SaveChangesAsync();
+            car.IsOwner = car.OwnerId == user.Id;
+            return car;
+        }
+
+        public async Task<Car> Update(Car car, User user)
+        {
+            Car old = GetById(car.Id, user);
+            old.Name = car.Name;
+            old.ShareCode = car.ShareCode;
+            old.Plate = car.Plate;
+            old.Image = car.Image;
+
+            await _context.SaveChangesAsync();
+
+            car.IsOwner = car.OwnerId == user.Id;
+            return old;
         }
     }
 }

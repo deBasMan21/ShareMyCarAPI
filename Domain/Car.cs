@@ -14,8 +14,12 @@ namespace Domain
         public string Name { get; set; }
         public string Plate { get; set; }
         public string Image { get; set; }
+        [JsonIgnore]
         public string ShareCode { get; set; }
+        [JsonIgnore]
         public int OwnerId { get; set; }
+        [NotMapped]
+        public bool IsOwner { get; set; } = false;
 
         public ICollection<Ride> Rides { get; set; }
 
