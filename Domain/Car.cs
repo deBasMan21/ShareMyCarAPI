@@ -20,7 +20,7 @@ namespace Domain
         public int OwnerId { get; set; }
         [NotMapped]
         public bool IsOwner { get; set; } = false;
-
+        [JsonIgnore]
         public ICollection<Ride> Rides { get; set; }
 
         [JsonIgnore]

@@ -1,5 +1,6 @@
 ﻿using Domain;
 using DomainServices;
+using Microsoft.EntityFrameworkCore;
 using MssqlInfrastructure.Context;
 using System;
 using System.Collections.Generic;
@@ -51,7 +52,9 @@ namespace MssqlInfrastructure.Repositories
 
         public Car GetById(int id, User user)
         {
-            Car car = _context.Cars.FirstOrDefault(c => c.Id == id);
+            Car car = _context.Cars
+                .Include(c => c.Rides)
+                .FirstOrDefault(c => c.Id == id);
             car.IsOwner = car.OwnerId == user.Id;
             return car;
         }

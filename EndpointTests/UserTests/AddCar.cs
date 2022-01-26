@@ -147,5 +147,37 @@ namespace EndpointTests.UserTests
             Assert.Equal(400, result?.ErrorCode);
             Assert.Equal("Incorrect shareCode", result?.Message);
         }
+
+        [Fact]
+        public void Put_Should_Return_Bad_Request_undefined()
+        {
+            // ARRANGE
+            var userRepo = new Mock<IUserRepository>();
+
+            var carRepo = new Mock<ICarRepository>();
+
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim("UserId", "1") }, "TestAuthentication"));
+
+            User user1 = new User() { Id = 1 };
+
+            Car car = new Car() { Id = 1, ShareCode = "undefined" };
+
+            ShareCarModel model = new ShareCarModel() { ShareCode = "blabla" };
+
+            userRepo.Setup(u => u.GetById(It.IsAny<int>())).Returns(user1);
+
+            carRepo.Setup(u => u.GetById(car.Id, user1)).Returns(car);
+
+            var sut = new UserController(userRepo.Object, carRepo.Object, null) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = user } } };
+
+            // ACT
+            var response = sut.AddCar(user1.Id, car.Id, model).Result;
+            var innerValue = response?.Result as BadRequestObjectResult;
+            var result = innerValue?.Value as ErrorResponse;
+
+            // ASSERT
+            Assert.Equal(400, result?.ErrorCode);
+            Assert.Equal("Owner needs to share this car to generate a shareCode", result?.Message);
+        }
     }
 }
