@@ -28,9 +28,9 @@ namespace EndpointTests.RideTests
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim("UserId", "1") }, "TestAuthentication"));
 
-            Ride ride = new Ride() { Id = 1 };
+            Car car = new Car() { Id = 1, Users = new List<User>(), Rides = new List<Ride>() { } };
 
-            Car car = new Car() { Id = 1 };
+            Ride ride = new Ride() { Id = 1, Car = car };
 
             User user1 = new User() { Id = 1 };
 

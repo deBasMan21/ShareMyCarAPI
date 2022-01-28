@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShareMyCarBackend.Models;
 using ShareMyCarBackend.Response;
+using System.Net.Http.Headers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,6 +19,7 @@ namespace ShareMyCarBackend.Controllers
         private readonly IUserRepository _userRepository;
         private readonly ICarRepository _carRepository;
         private readonly ILocationRepository _locationRepository;
+        private readonly HttpClient _httpClient = new HttpClient();
 
         public RideController(IRideRepository rideRepository, IUserRepository userRepository, ICarRepository carRepository, ILocationRepository locationRepository)
         {
@@ -67,6 +69,8 @@ namespace ShareMyCarBackend.Controllers
             Ride ride = new Ride() { Name = model.Name, BeginDateTime = model.BeginDateTime, EndDateTime = model.EndDateTime, User = user, Car = car, Destination = location};
 
             ride = await _rideRepository.Create(ride);
+
+            SendNotifications(ride);
 
             return Ok(new SuccesResponse() { Result = ride });
         }
@@ -118,6 +122,31 @@ namespace ShareMyCarBackend.Controllers
         {
             int id = int.Parse(User.Claims.First(i => i.Type == "UserId").Value);
             return _userRepository.GetById(id);
+        }
+
+        private void SendNotifications(Ride ride)
+        {
+            foreach(User user in ride.Car.Users)
+            {
+                _ = SendNotificationToPerson(ride, user.FBToken);
+            }
+        }
+
+        private async Task SendNotificationToPerson(Ride ride, string token)
+        {
+            var json = new
+            {
+                to = token,
+                notification = new
+                {
+                    title = $"{ride.User.Name} heeft een rit ingepland",
+                    body = $"{ride.User.Name} heeft op {ride.BeginDateTime.ToLongDateString()} een rit ingepland met de auto: {ride.Car.Name}",
+                    mutable_content = true,
+                    sound = "Tri-tone"
+                }
+            };
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("key", "=" + Environment.GetEnvironmentVariable("SMC_firebase_token"));
+            await _httpClient.PostAsJsonAsync("https://fcm.googleapis.com/fcm/send", json);
         }
     }
 }
