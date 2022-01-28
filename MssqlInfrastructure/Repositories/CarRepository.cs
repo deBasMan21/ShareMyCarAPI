@@ -54,6 +54,7 @@ namespace MssqlInfrastructure.Repositories
         {
             Car car = _context.Cars
                 .Include(c => c.Rides)
+                    .ThenInclude(r => r.Destination)
                 .FirstOrDefault(c => c.Id == id);
             car.IsOwner = car.OwnerId == user.Id;
             return car;

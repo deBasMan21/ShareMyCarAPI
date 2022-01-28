@@ -76,7 +76,7 @@ namespace ShareMyCarBackend.Controllers
             if (!result.Succeeded) return BadRequest(new ErrorResponse { ErrorCode = 400, Message = result.Errors });
 
             User newUser = new User() { Email = model.Email, Cars = new List<Car>(), FBToken = model.FBToken, Name = model.Name, PhoneNumber = model.PhoneNumber };
-            await _userRepository.Create(newUser);
+            newUser = await _userRepository.Create(newUser);
 
             await _userMgr.AddClaimAsync(user, new Claim("UserId", $"{newUser.Id}"));
 
@@ -90,7 +90,7 @@ namespace ShareMyCarBackend.Controllers
             var handler = new JwtSecurityTokenHandler();
             var securityToken = new JwtSecurityTokenHandler().CreateToken(securityTokenDescriptor);
 
-            return Ok(new SuccesResponse() { Result = new { succeeded = result.Succeeded, token = handler.WriteToken(securityToken) } });
+            return Ok(new SuccesResponse() { Result = new { Token = handler.WriteToken(securityToken), ExpireDate = DateTime.Now.AddDays(1), User = newUser } });
         }
     }
 }
