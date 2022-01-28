@@ -70,7 +70,7 @@ namespace ShareMyCarBackend.Controllers
 
             ride = await _rideRepository.Create(ride);
 
-            SendNotifications(ride);
+            SendNotifications(car, ride);
 
             return Ok(new SuccesResponse() { Result = ride });
         }
@@ -124,9 +124,9 @@ namespace ShareMyCarBackend.Controllers
             return _userRepository.GetById(id);
         }
 
-        private void SendNotifications(Ride ride)
+        private void SendNotifications(Car car, Ride ride)
         {
-            foreach(User user in ride.Car.Users)
+            foreach(User user in car.Users)
             {
                 _ = SendNotificationToPerson(ride, user.FBToken);
             }
