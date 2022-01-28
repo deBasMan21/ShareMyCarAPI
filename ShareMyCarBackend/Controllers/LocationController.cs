@@ -72,7 +72,7 @@ namespace ShareMyCarBackend.Controllers
 
             if(loc == null) { return Unauthorized(new ErrorResponse() { ErrorCode = 401, Message = "This account is not authorized to update this location"}); }
 
-            Location location = new Location() { Address = value.Address, City = value.City, Name = value.Name, ZipCode = value.ZipCode };
+            Location location = new Location() { Id = id, Address = value.Address, City = value.City, Name = value.Name, ZipCode = value.ZipCode };
 
             location = await _locationRepo.UpdateLocation(location);
 

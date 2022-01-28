@@ -49,7 +49,7 @@ namespace MssqlInfrastructure.Repositories
         public async Task<Location> UpdateLocation(Location location)
         {
             Location old = _context.Locations.FirstOrDefault(l => l.Id == location.Id);
-            if (old != null) { return null; }
+            if (old == null) { return null; }
             old.City = location.City;
             old.Name = location.Name;
             old.Address = location.Address;
