@@ -52,6 +52,8 @@ namespace ShareMyCarBackend.Controllers
 
             user.Name = model.Name;
             user.PhoneNumber = model.PhoneNumber;
+            user.ShowEventsInCalendar = model.ShowEventsInCalendar;
+            user.SendNotifications = model.SendNotifications;
 
             await _userRepository.Update(user);
 
@@ -108,6 +110,23 @@ namespace ShareMyCarBackend.Controllers
             user = await _userRepository.RemoveCar(user, car);
 
             return Ok(new SuccesResponse() { Result = user });
+        }
+
+        [HttpPut("/{id}/pf")]
+        public async Task<ActionResult<IResponse>> UpdatePf(int id, UpdatePfModel model)
+        {
+            User user = GetUser();
+
+            if (user.Id != id) { return Unauthorized(new ErrorResponse() { ErrorCode = 401, Message = "Not authorized to update this user" }); }
+
+            user.ProfilePicture = model.ProfilePicture;
+
+            user = await _userRepository.UpdateProfilePicture(user);
+
+            if(user == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "User not found"}); }
+
+            return Ok(new SuccesResponse() { Result = user });
+
         }
         private User GetUser()
         {
