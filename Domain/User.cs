@@ -13,7 +13,11 @@ namespace Domain
         public string Name { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
+        public string ProfilePicture { get; set; }
+        public bool ShowEventsInCalendar { get; set; }
+        public bool SendNotifications { get; set; }
         public ICollection<Car> Cars { get; set; }
+
 
         [JsonIgnore]
         public string FBToken { get; set; }

@@ -75,6 +75,19 @@ namespace MssqlInfrastructure.Repositories
             old.Cars = user.Cars;
             old.FBToken = user.FBToken;
             old.PhoneNumber = user.PhoneNumber;
+            old.SendNotifications = user.SendNotifications;
+            old.ShowEventsInCalendar = user.ShowEventsInCalendar;
+
+            await _context.SaveChangesAsync();
+            return old;
+        }
+
+        public async Task<User> UpdateProfilePicture(User user)
+        {
+            User old = _context.Users.FirstOrDefault(u => u.Id == user.Id);
+            if (old == null) { return null; }
+
+            old.ProfilePicture = user.ProfilePicture;
 
             await _context.SaveChangesAsync();
             return old;
