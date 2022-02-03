@@ -53,7 +53,7 @@ namespace MssqlInfrastructure.Repositories
         public Car GetById(int id, User user)
         {
             Car car = _context.Cars
-                .Include(c => c.Rides)
+                .Include(c => c.Rides.Where(r => r.BeginDateTime > DateTime.Now))
                     .ThenInclude(r => r.Destination)
                 .Include(c => c.Users)
                 .FirstOrDefault(c => c.Id == id);
