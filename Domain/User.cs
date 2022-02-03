@@ -15,10 +15,10 @@ namespace Domain
         public string PhoneNumber { get; set; }
         public string ProfilePicture { get; set; }
         public bool ShowEventsInCalendar { get; set; }
+        public bool SendNotifications { get; set; }
         public ICollection<Car> Cars { get; set; }
 
-        [JsonIgnore]
-        public bool SendNotifications { get; set; }
+
         [JsonIgnore]
         public string FBToken { get; set; }
     }
