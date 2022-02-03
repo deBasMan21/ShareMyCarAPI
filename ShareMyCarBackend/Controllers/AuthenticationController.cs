@@ -1,5 +1,6 @@
 ﻿using Domain;
 using DomainServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -91,6 +92,29 @@ namespace ShareMyCarBackend.Controllers
             var securityToken = new JwtSecurityTokenHandler().CreateToken(securityTokenDescriptor);
 
             return Ok(new SuccesResponse() { Result = new { Token = handler.WriteToken(securityToken), ExpireDate = DateTime.Now.AddDays(1), User = newUser } });
+        }
+
+        [Authorize]
+        [HttpDelete("logout")]
+        public async Task<ActionResult<IResponse>> LogOut()
+        {
+            User user = GetUser();
+
+            if (user == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "User not found" }); }
+
+            user.FBToken = "";
+
+            user = await _userRepository.Update(user);
+
+            if (user == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "User not found" }); }
+
+            return Ok(new SuccesResponse() { Result = user });
+        }
+
+        private User GetUser()
+        {
+            int id = int.Parse(User.Claims.First(i => i.Type == "UserId").Value);
+            return _userRepository.GetById(id);
         }
     }
 }

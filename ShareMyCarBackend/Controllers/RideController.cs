@@ -128,7 +128,10 @@ namespace ShareMyCarBackend.Controllers
         {
             foreach(User user in car.Users)
             {
-                _ = SendNotificationToPerson(ride, user.FBToken);
+                if (user.SendNotifications)
+                {
+                    _ = SendNotificationToPerson(ride, user.FBToken);
+                }
             }
         }
 

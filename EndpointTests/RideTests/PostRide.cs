@@ -32,7 +32,7 @@ namespace EndpointTests.RideTests
 
             Ride ride = new Ride() { Id = 1, Car = car };
 
-            User user1 = new User() { Id = 1 };
+            User user1 = new User() { Id = 1, SendNotifications = false };
 
             Location location = new Location() { Id = 1 };
 
