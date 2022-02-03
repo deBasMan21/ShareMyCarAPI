@@ -48,7 +48,8 @@ namespace MssqlInfrastructure.Repositories
                 .Include(r => r.Destination)
                 .Include(r => r.User)
                 .Include(r => r.Car)
-                .Where(r => r.User == user)
+                .Where(r => r.User == user && r.BeginDateTime > DateTime.Now)
+                .OrderBy(r => r.BeginDateTime)
                 .AsNoTracking()
                 .ToList();
         }
