@@ -112,7 +112,7 @@ namespace ShareMyCarBackend.Controllers
             return Ok(new SuccesResponse() { Result = user });
         }
 
-        [HttpPut("/{id}/pf")]
+        [HttpPut("{id}/pf")]
         public async Task<ActionResult<IResponse>> UpdatePf(int id, UpdatePfModel model)
         {
             User user = GetUser();
