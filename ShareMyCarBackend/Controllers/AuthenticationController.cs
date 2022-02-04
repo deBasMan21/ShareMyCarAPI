@@ -76,7 +76,7 @@ namespace ShareMyCarBackend.Controllers
 
             if (!result.Succeeded) return BadRequest(new ErrorResponse { ErrorCode = 400, Message = result.Errors });
 
-            User newUser = new User() { Email = model.Email, Cars = new List<Car>(), FBToken = model.FBToken, Name = model.Name, PhoneNumber = model.PhoneNumber };
+            User newUser = new User() { Email = model.Email, Cars = new List<Car>(), FBToken = model.FBToken, Name = model.Name, PhoneNumber = model.PhoneNumber, ProfilePicture = String.Empty, SendNotifications = true, ShowEventsInCalendar = false };
             newUser = await _userRepository.Create(newUser);
 
             await _userMgr.AddClaimAsync(user, new Claim("UserId", $"{newUser.Id}"));
@@ -107,6 +107,29 @@ namespace ShareMyCarBackend.Controllers
             user = await _userRepository.Update(user);
 
             if (user == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "User not found" }); }
+
+            return Ok(new SuccesResponse() { Result = user });
+        }
+
+        [Authorize]
+        [HttpPut("password")]
+        public async Task<ActionResult<IResponse>> UpdatePassword([FromBody] UpdatePasswordModel model)
+        {
+            User user = GetUser();
+
+            if (user == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "User not found" }); }
+
+            string userLoginId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var userLogin = await _userMgr.FindByIdAsync(userLoginId);
+
+            if (!(await _signInMgr.PasswordSignInAsync(userLogin, model.OldPassword, false, false)).Succeeded) { return Unauthorized(new ErrorResponse() { ErrorCode = 401, Message = "Wrong password" }); }
+
+            var token = await _userMgr.GeneratePasswordResetTokenAsync(userLogin);
+
+            var result = await _userMgr.ResetPasswordAsync(userLogin, token, model.Password);
+
+            if (!result.Succeeded) { return BadRequest(new ErrorResponse() { ErrorCode = 400, Message = "Something unexpected happened" }); }
 
             return Ok(new SuccesResponse() { Result = user });
         }
