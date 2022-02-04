@@ -66,7 +66,7 @@ namespace ShareMyCarBackend.Controllers
 
             if(location == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Location not found" }); }
 
-            bool possible = car.Rides.Where(r => (model.BeginDateTime > r.BeginDateTime && model.BeginDateTime < r.EndDateTime) || (model.EndDateTime > r.BeginDateTime && model.EndDateTime < r.EndDateTime)).FirstOrDefault() == null;
+            bool possible = RideIsPossible(car, model);
 
             if (!possible)
             {
@@ -129,6 +129,13 @@ namespace ShareMyCarBackend.Controllers
         {
             int id = int.Parse(User.Claims.First(i => i.Type == "UserId").Value);
             return _userRepository.GetById(id);
+        }
+
+        private bool RideIsPossible(Car car, NewRideModel model)
+        {
+            bool possible = car.Rides.Where(r => (model.BeginDateTime > r.BeginDateTime && model.BeginDateTime < r.EndDateTime) || (model.EndDateTime > r.BeginDateTime && model.EndDateTime < r.EndDateTime)).FirstOrDefault() == null;
+            possible = possible && car.Rides.Where(r => (r.BeginDateTime > model.BeginDateTime && r.BeginDateTime < model.EndDateTime) || (r.EndDateTime > model.BeginDateTime && r.EndDateTime < model.EndDateTime)).FirstOrDefault() == null;
+            return possible;
         }
 
         private void SendNotifications(Car car, Ride ride)
