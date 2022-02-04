@@ -66,6 +66,13 @@ namespace ShareMyCarBackend.Controllers
 
             if(location == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Location not found" }); }
 
+            bool possible = car.Rides.Where(r => (model.BeginDateTime > r.BeginDateTime && model.BeginDateTime < r.EndDateTime) || (model.EndDateTime > r.BeginDateTime && model.EndDateTime < r.EndDateTime)).FirstOrDefault() == null;
+
+            if (!possible)
+            {
+                return BadRequest(new ErrorResponse() { ErrorCode = 400, Message = "Already a ride planned at this time"});
+            }
+
             Ride ride = new Ride() { Name = model.Name, BeginDateTime = model.BeginDateTime, EndDateTime = model.EndDateTime, User = user, Car = car, Destination = location};
 
             ride = await _rideRepository.Create(ride);
