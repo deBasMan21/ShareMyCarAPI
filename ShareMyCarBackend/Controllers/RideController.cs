@@ -64,8 +64,6 @@ namespace ShareMyCarBackend.Controllers
 
             Location location = _locationRepository.GetById(model.LocationId, user.Id);
 
-            if(location == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Location not found" }); }
-
             bool possible = RideIsPossible(car, model);
 
             if (!possible)
@@ -95,8 +93,6 @@ namespace ShareMyCarBackend.Controllers
             if(ride.User.Id != user.Id) { return Unauthorized(new ErrorResponse() { ErrorCode = 401, Message = "Not authorized to update this ride" }); }
 
             Location location = _locationRepository.GetById(model.LocationId, user.Id);
-
-            if(location == null) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Location not found"}); }
 
             ride.Name = model.Name;
             ride.BeginDateTime = model.BeginDateTime;

@@ -44,7 +44,7 @@ namespace ShareMyCarBackend.Controllers
                     var securityTokenDescriptor = new SecurityTokenDescriptor
                     {
                         Subject = (await _signInMgr.CreateUserPrincipalAsync(user)).Identities.First(),
-                        Expires = DateTime.Now.AddDays(1),
+                        Expires = DateTime.Now.AddYears(1),
                         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_Secret"))), SecurityAlgorithms.HmacSha256Signature)
                     };
 
@@ -84,7 +84,7 @@ namespace ShareMyCarBackend.Controllers
             var securityTokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = (await _signInMgr.CreateUserPrincipalAsync(user)).Identities.First(),
-                Expires = DateTime.Now.AddDays(1),
+                Expires = DateTime.Now.AddYears(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_Secret"))), SecurityAlgorithms.HmacSha256Signature)
             };
 

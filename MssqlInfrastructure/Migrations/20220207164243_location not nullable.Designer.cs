@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MssqlInfrastructure.Context;
 
@@ -11,9 +12,10 @@ using MssqlInfrastructure.Context;
 namespace MssqlInfrastructure.Migrations
 {
     [DbContext(typeof(SMCDbContext))]
-    partial class SMCDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220207164243_location not nullable")]
+    partial class locationnotnullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -134,7 +136,7 @@ namespace MssqlInfrastructure.Migrations
                     b.Property<int>("CarId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DestinationId")
+                    b.Property<int>("DestinationId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndDateTime")
@@ -231,7 +233,9 @@ namespace MssqlInfrastructure.Migrations
 
                     b.HasOne("Domain.Location", "Destination")
                         .WithMany()
-                        .HasForeignKey("DestinationId");
+                        .HasForeignKey("DestinationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.User", "User")
                         .WithMany()
