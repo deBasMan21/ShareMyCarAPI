@@ -131,45 +131,5 @@ namespace EndpointTests.RideTests
             Assert.Equal(401, result?.ErrorCode);
             Assert.Equal("Not authorized to update this ride", result?.Message);
         }
-
-        [Fact]
-        public void Put_Should_Return_Not_Found_Location()
-        {
-            var rideRepo = new Mock<IRideRepository>();
-            var locationRepo = new Mock<ILocationRepository>();
-            var carRepo = new Mock<ICarRepository>();
-            var userRepo = new Mock<IUserRepository>();
-
-            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim("UserId", "1") }, "TestAuthentication"));
-
-            Car car = new Car() { Id = 1 };
-
-            User user1 = new User() { Id = 1 };
-
-            Ride ride = new Ride() { Id = 1, User = user1 };
-
-            Location location = new Location() { Id = 1 };
-
-            UpdateRideModel model = new UpdateRideModel() { BeginDateTime = DateTime.Now, EndDateTime = DateTime.Now, LocationId = 1, Name = "" };
-
-            userRepo.Setup(u => u.GetById(user1.Id)).Returns(user1);
-
-            rideRepo.Setup(u => u.GetById(ride.Id)).Returns(ride);
-
-            carRepo.Setup(u => u.GetById(car.Id, user1)).Returns(car);
-
-            locationRepo.Setup(l => l.GetById(location.Id, user1.Id));
-
-            var sut = new RideController(rideRepo.Object, userRepo.Object, carRepo.Object, locationRepo.Object) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = user } } };
-
-            // ACT
-            var response = sut.Put(ride.Id, model).Result;
-            var innerValue = response.Result as NotFoundObjectResult;
-            var result = innerValue?.Value as ErrorResponse;
-
-            // ASSERT
-            Assert.Equal(404, result?.ErrorCode);
-            Assert.Equal("Location not found", result?.Message);
-        }
     }
 }
