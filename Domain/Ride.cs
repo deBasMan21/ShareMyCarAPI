@@ -16,7 +16,7 @@ namespace Domain
         public DateTime ReservationDateTime { get; set; }
         public DateTime LastChangeDateTime { get; set; }
 
-        public Location Destination { get; set; }
+        public Location? Destination { get; set; }
 
         public User User { get; set; }
         public Car Car { get; set; }
