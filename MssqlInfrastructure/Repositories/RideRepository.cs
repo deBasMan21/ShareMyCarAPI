@@ -48,7 +48,7 @@ namespace MssqlInfrastructure.Repositories
                 .Include(r => r.Destination)
                 .Include(r => r.User)
                 .Include(r => r.Car)
-                .Where(r => r.User == user && r.BeginDateTime > DateTime.Now && r.Status == StatusType.APPROVED)
+                .Where(r => r.User == user && r.BeginDateTime > DateTime.Now.AddDays(-30) && r.Status == StatusType.APPROVED)
                 .OrderBy(r => r.BeginDateTime)
                 .AsNoTracking()
                 .ToList();
