@@ -14,6 +14,7 @@ namespace DomainServices
         public Task<Ride> Create(Ride ride);
         public Task<Ride> Update(Ride ride);
         public Task<Ride> Delete(Ride ride);
-
+        public List<Ride> GetRequested(User user);
+        public List<Ride> GetDenied(User user);
     }
 }

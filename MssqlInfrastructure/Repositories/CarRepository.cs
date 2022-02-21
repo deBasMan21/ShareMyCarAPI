@@ -53,7 +53,7 @@ namespace MssqlInfrastructure.Repositories
         public Car GetById(int id, User user)
         {
             Car car = _context.Cars
-                .Include(c => c.Rides.Where(r => r.BeginDateTime > DateTime.Now))
+                .Include(c => c.Rides.Where(r => r.BeginDateTime > DateTime.Now).OrderBy(r => r.BeginDateTime))
                     .ThenInclude(r => r.Destination)
                 .Include(c => c.Users)
                 .FirstOrDefault(c => c.Id == id);
@@ -76,6 +76,7 @@ namespace MssqlInfrastructure.Repositories
             old.ShareCode = car.ShareCode;
             old.Plate = car.Plate;
             old.Image = car.Image;
+            old.NeedsApproval = car.NeedsApproval;
 
             await _context.SaveChangesAsync();
 
