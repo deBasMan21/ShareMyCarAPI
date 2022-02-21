@@ -20,5 +20,6 @@ namespace Domain
 
         public User User { get; set; }
         public Car Car { get; set; }
+        public StatusType Status { get; set; }
     }
 }

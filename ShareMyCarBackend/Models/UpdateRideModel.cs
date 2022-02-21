@@ -6,5 +6,6 @@
         public DateTime BeginDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
         public int LocationId { get; set; }
+        public int Status { get; set; }
     }
 }

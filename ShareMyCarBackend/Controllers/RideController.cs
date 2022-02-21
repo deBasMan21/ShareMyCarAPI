@@ -41,6 +41,30 @@ namespace ShareMyCarBackend.Controllers
             return Ok(new SuccesResponse() { Result = rides });
         }
 
+        [HttpGet("requested")]
+        public ActionResult<IResponse> GetRequestedRides()
+        {
+            User user = GetUser();
+
+            List<Ride> rides = _rideRepository.GetRequested(user);
+
+            if (rides.Count == 0) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Ride not found" }); }
+
+            return Ok(new SuccesResponse() { Result = rides });
+        }
+
+        [HttpGet("denied")]
+        public ActionResult<IResponse> GetDeniedRides()
+        {
+            User user = GetUser();
+
+            List<Ride> rides = _rideRepository.GetDenied(user);
+
+            if (rides.Count == 0) { return NotFound(new ErrorResponse() { ErrorCode = 404, Message = "Ride not found" }); }
+
+            return Ok(new SuccesResponse() { Result = rides });
+        }
+
         // GET api/<RideController>/5
         [HttpGet("{id}")]
         public ActionResult<IResponse> Get(int id)
@@ -75,7 +99,15 @@ namespace ShareMyCarBackend.Controllers
 
             ride = await _rideRepository.Create(ride);
 
-            SendNotifications(car, ride);
+            if (car.NeedsApproval && user.Id != car.OwnerId)
+            {
+                ride.Status = StatusType.REQUESTED;
+                SendNotificationsForApproval(ride, user);
+            } else
+            {
+                ride.Status = StatusType.APPROVED;
+                SendNotifications(car, ride);
+            }
 
             return Ok(new SuccesResponse() { Result = ride });
         }
@@ -92,12 +124,31 @@ namespace ShareMyCarBackend.Controllers
 
             if(ride.User.Id != user.Id) { return Unauthorized(new ErrorResponse() { ErrorCode = 401, Message = "Not authorized to update this ride" }); }
 
+            StatusType status;
+
+            if (model.Status == 1)
+            {
+                status = StatusType.DENIED;
+            } else if (model.Status == 0)
+            {
+                status = StatusType.APPROVED;
+            } else
+            {
+                status = StatusType.REQUESTED;
+            }
+
+            if (status != ride.Status)
+            {
+                SendNotificationsAfterApproval(ride);
+            }
+
             Location location = _locationRepository.GetById(model.LocationId, user.Id);
 
             ride.Name = model.Name;
             ride.BeginDateTime = model.BeginDateTime;
             ride.EndDateTime = model.EndDateTime;
             ride.Destination = location;
+            ride.Status = status;
 
             ride = await _rideRepository.Update(ride);
 
@@ -134,6 +185,22 @@ namespace ShareMyCarBackend.Controllers
             return possible;
         }
 
+        private void SendNotificationsForApproval(Ride ride, User user)
+        {
+            if (user.SendNotifications)
+            {
+                _ = SendNotificationForRequest(ride, user.FBToken);
+            }
+        }
+
+        private void SendNotificationsAfterApproval(Ride ride)
+        {
+            if (ride.User.SendNotifications)
+            {
+                _ = SendNotificationForRequestApproval(ride, ride.User.FBToken);
+            }
+        }
+
         private void SendNotifications(Car car, Ride ride)
         {
             foreach(User user in car.Users)
@@ -154,6 +221,43 @@ namespace ShareMyCarBackend.Controllers
                 {
                     title = $"{ride.User.Name} heeft een rit ingepland",
                     body = $"{ride.User.Name} heeft op {ride.BeginDateTime.ToLongDateString()} een rit ingepland met de auto: {ride.Car.Name}",
+                    mutable_content = true,
+                    sound = "Tri-tone"
+                }
+            };
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("key", "=" + Environment.GetEnvironmentVariable("SMC_firebase_token"));
+            await _httpClient.PostAsJsonAsync("https://fcm.googleapis.com/fcm/send", json);
+        }
+
+        private async Task SendNotificationForRequest(Ride ride, string token)
+        {
+            var json = new
+            {
+                to = token,
+                notification = new
+                {
+                    title = $"{ride.User.Name} wil een rit inplannen",
+                    body = $"{ride.User.Name} wil met de auto: {ride.Car.Name} een rit maken. Open de app om deze te accepteren of af te wijzen.",
+                    mutable_content = true,
+                    sound = "Tri-tone"
+                }
+            };
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("key", "=" + Environment.GetEnvironmentVariable("SMC_firebase_token"));
+            await _httpClient.PostAsJsonAsync("https://fcm.googleapis.com/fcm/send", json);
+        }
+
+
+        private async Task SendNotificationForRequestApproval(Ride ride, string token)
+        {
+            string approved = ride.Status == StatusType.APPROVED ? "goedgekeurd" : "Afgewezen";
+
+            var json = new
+            {
+                to = token,
+                notification = new
+                {
+                    title = $"Je rit is {approved}",
+                    body = $"Open de app voor meer informatie.",
                     mutable_content = true,
                     sound = "Tri-tone"
                 }

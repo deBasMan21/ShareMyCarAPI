@@ -48,7 +48,31 @@ namespace MssqlInfrastructure.Repositories
                 .Include(r => r.Destination)
                 .Include(r => r.User)
                 .Include(r => r.Car)
-                .Where(r => r.User == user && r.BeginDateTime > DateTime.Now)
+                .Where(r => r.User == user && r.BeginDateTime > DateTime.Now && r.Status == StatusType.APPROVED)
+                .OrderBy(r => r.BeginDateTime)
+                .AsNoTracking()
+                .ToList();
+        }
+
+        public List<Ride> GetDenied(User user)
+        {
+            return _context.Rides
+                .Include(r => r.Destination)
+                .Include(r => r.User)
+                .Include(r => r.Car)
+                .Where(r => r.User == user && r.BeginDateTime > DateTime.Now && r.Status == StatusType.DENIED)
+                .OrderBy(r => r.BeginDateTime)
+                .AsNoTracking()
+                .ToList();
+        }
+
+        public List<Ride> GetRequested(User user)
+        {
+            return _context.Rides
+                .Include(r => r.Destination)
+                .Include(r => r.User)
+                .Include(r => r.Car)
+                .Where(r => r.Car.OwnerId == user.Id && r.Status == StatusType.REQUESTED && r.BeginDateTime > DateTime.Now)
                 .OrderBy(r => r.BeginDateTime)
                 .AsNoTracking()
                 .ToList();
@@ -74,6 +98,7 @@ namespace MssqlInfrastructure.Repositories
             old.EndDateTime = ride.EndDateTime;
             old.Name = ride.Name;
             old.LastChangeDateTime = DateTime.Now;
+            old.Status = ride.Status;
 
             await _context.SaveChangesAsync();
 
