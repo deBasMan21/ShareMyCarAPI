@@ -76,6 +76,7 @@ namespace MssqlInfrastructure.Repositories
             old.ShareCode = car.ShareCode;
             old.Plate = car.Plate;
             old.Image = car.Image;
+            old.NeedsApproval = car.NeedsApproval;
 
             await _context.SaveChangesAsync();
 

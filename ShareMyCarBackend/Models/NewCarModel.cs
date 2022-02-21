@@ -5,5 +5,6 @@
         public string Name { get; set; }
         public string Plate { get; set; }
         public string Image { get; set; }
+        public bool NeedsApproval { get; set; }
     }
 }

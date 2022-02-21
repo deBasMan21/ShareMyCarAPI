@@ -55,7 +55,7 @@ namespace ShareMyCarBackend.Controllers
         {
             User user = GetUser();
             
-            Car newCar = new Car() { Image = model.Image, Name = model.Name, Plate = model.Plate, OwnerId = user.Id, Users = new List<User>() { user }, ShareCode = "undefined" };
+            Car newCar = new Car() { Image = model.Image, Name = model.Name, Plate = model.Plate, OwnerId = user.Id, Users = new List<User>() { user }, ShareCode = "undefined", NeedsApproval = model.NeedsApproval };
 
             newCar = await _carRepository.Create(newCar, user);
 
@@ -75,6 +75,7 @@ namespace ShareMyCarBackend.Controllers
             car.Name = model.Name;
             car.Plate = model.Plate;
             car.Image = model.Image;
+            car.NeedsApproval = model.NeedsApproval;
 
             await _carRepository.Update(car, user);
 
